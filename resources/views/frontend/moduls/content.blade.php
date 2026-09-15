@@ -21,12 +21,16 @@
                 @endif
             </header>
 
-            <!-- Main Content Body (Block Builder) -->
-            <div class="w-full max-w-none text-gray-800 prose prose-red prose-lg lg:prose-xl">
-                @foreach($page->content ?? [] as $block)
+     <!-- Main Content Body (Block Builder) -->
+        <div class="w-full max-w-none text-gray-800 prose prose-red prose-lg lg:prose-xl">
+            @if(is_array($page->content))
+                @foreach($page->content as $block)
                     @includeIf('frontend.blocks.'.$block['type'], ['data' => $block['data'] ?? []])
                 @endforeach
-            </div>
+            @else
+                {!! $page->content ?? '' !!}
+            @endif
+        </div>
 
             <!-- Dynamic Modules Integration -->
             @if(in_array($page->module_type ?? null, ['booking', 'booking_tracker', 'gallery']))

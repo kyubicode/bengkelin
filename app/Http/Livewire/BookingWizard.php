@@ -296,15 +296,30 @@ class BookingWizard extends Component
         return $this->selectedSymptomsDetail->groupBy('category')->map->count();
     }
 
-    public function render()
-    {
-        return view('components.booking-wizard', [
-            'vehicleTypesList' => VehicleType::where('is_active', true)
-                ->orderBy('sort_order')
-                ->get(),
-            'servicesList' => Service::where('is_active', true)->get(),
-            'complaintCategories' => ComplaintSymptom::select('category')->distinct()->pluck('category'),
-            'symptomsList' => ComplaintSymptom::orderBy('category')->orderBy('symptom_name')->get(),
-        ]);
-    }
+public function render()
+{
+    $symptoms = ComplaintSymptom::orderBy('category')
+        ->orderBy('symptom_name')
+        ->get();
+
+    $categories = $symptoms
+        ->pluck('category')
+        ->filter()
+        ->map(fn ($category) => trim($category))
+        ->unique(fn ($category) => strtolower($category))
+        ->values();
+
+    return view('components.booking-wizard', [
+        'vehicleTypesList' => VehicleType::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get(),
+
+        'servicesList' => Service::where('is_active', true)
+            ->get(),
+
+        'complaintCategories' => $categories,
+
+        'symptomsList' => $symptoms,
+    ]);
+}
 }

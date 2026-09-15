@@ -11,11 +11,22 @@ class CmsSeeder extends Seeder
     public function run(): void
     {
         // 1. Halaman Beranda & Profil
+        // NOTE: 'content' harus berupa array block sesuai struktur
+        // Filament Builder di PageResource (block type: rich_text, hero, dll),
+        // BUKAN string HTML biasa. Karena model Page sudah $casts = ['content' => 'array'],
+        // Eloquent otomatis encode array ini jadi JSON saat disimpan ke DB.
         $home = Page::firstOrCreate(
             ['slug' => 'home'],
             [
                 'title' => 'Selamat Datang di Website Kami',
-                'content' => '<p>Ini adalah halaman utama statis yang dikelola langsung dari Admin Panel Filament.</p>',
+                'content' => [
+                    [
+                        'type' => 'rich_text',
+                        'data' => [
+                            'body' => '<p>Ini adalah halaman utama statis yang dikelola langsung dari Admin Panel Filament.</p>',
+                        ],
+                    ],
+                ],
                 'is_published' => true,
             ]
         );
@@ -24,7 +35,14 @@ class CmsSeeder extends Seeder
             ['slug' => 'tentang-kami'],
             [
                 'title' => 'Tentang Perusahaan',
-                'content' => '<p>Kami adalah perusahaan yang bergerak di bidang solusi teknologi informasi.</p>',
+                'content' => [
+                    [
+                        'type' => 'rich_text',
+                        'data' => [
+                            'body' => '<p>Kami adalah perusahaan yang bergerak di bidang solusi teknologi informasi.</p>',
+                        ],
+                    ],
+                ],
                 'is_published' => true,
             ]
         );

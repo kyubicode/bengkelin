@@ -111,72 +111,139 @@
             </div>
         @endif
 
-        <!-- Tahap 03 - Keluhan -->
-        @if ($currentStep == 3)
-            <div class="space-y-5 animate-fade-in">
-                <div class="border-l-4 border-brand-red pl-3">
-                    <h2 class="text-sm font-black text-brand-dark uppercase tracking-wider">Keluhan Kendaraan</h2>
-                    <p class="text-xs font-medium text-gray-500">Pilih area dan gejala yang dirasakan. Anda bisa memilih lebih dari satu gejala, bahkan dari beberapa area sekaligus.</p>
-                </div>
+      <!-- Tahap 03 - Keluhan -->
+@if ($currentStep == 3)
+    <div class="space-y-5 animate-fade-in">
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    @foreach ($complaintCategories as $cat)
-                        @php
-                            $count = $this->selectedCountByCategory[$cat] ?? 0;
-                            $isActive = $active_category === $cat;
-                        @endphp
-                        <button type="button"
-                            wire:key="category-{{ $cat }}"
-                            wire:click="toggleCategory('{{ $cat }}')"
-                            class="p-4 border-2 rounded-none text-center transition
-                                {{ $isActive ? 'border-brand-red bg-red-50' : 'border-gray-200 hover:border-brand-dark hover:bg-gray-50' }}">
-                            <span class="text-sm font-black text-brand-dark uppercase block">{{ $cat }}</span>
-                            <span class="text-xs font-semibold {{ $count > 0 ? 'text-brand-red' : 'text-gray-500' }}">
-                                {{ $count }} gejala dipilih
+        <div class="border-l-4 border-brand-red pl-3">
+            <h2 class="text-sm font-black text-brand-dark uppercase tracking-wider">
+                Keluhan Kendaraan
+            </h2>
+            <p class="text-xs font-medium text-gray-500">
+                Pilih area dan gejala yang dirasakan. Anda bisa memilih lebih dari satu gejala,
+                bahkan dari beberapa area sekaligus.
+            </p>
+        </div>
+
+        {{-- DAFTAR KATEGORI --}}
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            @foreach ($complaintCategories as $cat)
+                @php
+                    $count = $this->selectedSymptomsDetail
+                        ->filter(function ($symp) use ($cat) {
+                            return strtolower(trim($symp->category)) === strtolower(trim($cat));
+                        })
+                        ->count();
+
+                    $isActive = strtolower(trim($active_category)) === strtolower(trim($cat));
+                @endphp
+
+                <button
+                    type="button"
+                    wire:key="category-{{ md5(strtolower(trim($cat))) }}"
+                    wire:click="toggleCategory('{{ addslashes($cat) }}')"
+                    class="p-4 border-2 rounded-none text-center transition
+                        {{ $isActive
+                            ? 'border-brand-red bg-red-50'
+                            : 'border-gray-200 hover:border-brand-dark hover:bg-gray-50' }}">
+
+                    <span class="text-sm font-black text-brand-dark uppercase block">
+                        {{ $cat }}
+                    </span>
+
+                    <span class="text-xs font-semibold
+                        {{ $count > 0 ? 'text-brand-red' : 'text-gray-500' }}">
+                        {{ $count }} gejala dipilih
+                    </span>
+                </button>
+            @endforeach
+        </div>
+
+        {{-- DAFTAR GEJALA --}}
+        @if ($active_category)
+            @php
+                $activeSymptoms = $symptomsList->filter(function ($symp) use ($active_category) {
+                    return strtolower(trim($symp->category)) === strtolower(trim($active_category));
+                });
+            @endphp
+
+            <div class="pt-2">
+
+                <h3 class="text-sm font-black uppercase text-brand-dark mb-3">
+                    {{ $active_category }}
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                    @forelse ($activeSymptoms as $symp)
+
+                        <label
+                            wire:key="symptom-{{ $symp->id }}"
+                            class="flex items-center space-x-3 p-4 border-2 rounded-none cursor-pointer transition
+                                {{ in_array($symp->id, $selected_symptoms)
+                                    ? 'border-brand-red bg-red-50'
+                                    : 'border-gray-200 hover:border-brand-dark hover:bg-gray-50' }}">
+
+                            <input
+                                type="checkbox"
+                                wire:model.live="selected_symptoms"
+                                value="{{ $symp->id }}"
+                                class="h-5 w-5 text-brand-red rounded-none border-gray-400 focus:ring-brand-red">
+
+                            <span class="text-sm font-bold text-brand-dark uppercase">
+                                {{ $symp->symptom_name }}
                             </span>
-                        </button>
-                    @endforeach
+
+                        </label>
+
+                    @empty
+
+                        <div class="col-span-full p-4 bg-gray-50 border border-gray-200">
+                            <p class="text-sm text-gray-500 font-medium">
+                                Belum ada gejala pada kategori ini.
+                            </p>
+                        </div>
+
+                    @endforelse
+
                 </div>
-
-                @if ($active_category)
-                    <div class="pt-2">
-                        <h3 class="text-sm font-black uppercase text-brand-dark mb-3">{{ $active_category }}</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            @foreach ($symptomsList->where('category', $active_category) as $symp)
-                                <label wire:key="symptom-{{ $symp->id }}"
-                                       class="flex items-center space-x-3 p-4 border-2 rounded-none cursor-pointer transition
-                                    {{ in_array($symp->id, $selected_symptoms) ? 'border-brand-red bg-red-50' : 'border-gray-200 hover:border-brand-dark hover:bg-gray-50' }}">
-                                    <input type="checkbox"
-                                           wire:model.live="selected_symptoms"
-                                           value="{{ $symp->id }}"
-                                           class="h-5 w-5 text-brand-red rounded-none border-gray-400 focus:ring-brand-red">
-                                    <span class="text-sm font-bold text-brand-dark uppercase">{{ $symp->symptom_name }}</span>
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
-                @if (count($selected_symptoms) > 0)
-                    <div class="bg-gray-50 border-t-4 border-brand-dark p-4 mt-2">
-                        <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">
-                            Total {{ count($selected_symptoms) }} Gejala Dipilih
-                        </span>
-                        <div class="flex flex-wrap gap-2">
-                            @foreach ($this->selectedSymptomsDetail as $symp)
-                                <span class="text-[11px] font-bold uppercase bg-white border border-gray-300 px-2 py-1">
-                                    {{ $symp->symptom_name }}
-                                </span>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
-                @error('selected_symptoms') <span class="text-brand-red text-xs block font-bold uppercase">{{ $message }}</span> @enderror
-                @error('selected_symptoms.*') <span class="text-brand-red text-xs block font-bold uppercase">Salah satu gejala yang dipilih tidak valid.</span> @enderror
             </div>
         @endif
 
+        {{-- GEJALA YANG SUDAH DIPILIH --}}
+        @if (count($selected_symptoms) > 0)
+            <div class="bg-gray-50 border-t-4 border-brand-dark p-4 mt-2">
+
+                <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">
+                    Total {{ count($selected_symptoms) }} Gejala Dipilih
+                </span>
+
+                <div class="flex flex-wrap gap-2">
+
+                    @foreach ($this->selectedSymptomsDetail as $symp)
+                        <span class="text-[11px] font-bold uppercase bg-white border border-gray-300 px-2 py-1">
+                            {{ $symp->symptom_name }}
+                        </span>
+                    @endforeach
+
+                </div>
+            </div>
+        @endif
+
+        @error('selected_symptoms')
+            <span class="text-brand-red text-xs block font-bold uppercase">
+                {{ $message }}
+            </span>
+        @enderror
+
+        @error('selected_symptoms.*')
+            <span class="text-brand-red text-xs block font-bold uppercase">
+                Salah satu gejala yang dipilih tidak valid.
+            </span>
+        @enderror
+
+    </div>
+@endif
         <!-- Tahap 04 - Assessment -->
         @if ($currentStep == 4)
             <div class="space-y-5 animate-fade-in">
