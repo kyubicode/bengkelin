@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-# Install dependencies, PHP extensions, serta Node.js & NPM
+# Install dependencies, PHP extensions, Node.js & NPM
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -37,24 +37,20 @@ WORKDIR /var/www/html
 
 COPY . .
 
-# Paksa environment database ke SQLite saat proses build
 ENV COMPOSER_MEMORY_LIMIT=-1
-ENV DB_CONNECTION=sqlite
-ENV DB_DATABASE=/var/www/html/database/database.sqlite
-
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Build frontend, buat DB SQLite, jalankan migrasi & seeder
+# Build frontend assets & Filament assets saja saat image dikompilasi
 RUN rm -f public/hot \
     && npm install \
     && npm run build \
-    && touch /var/www/html/database/database.sqlite \
-    && php artisan migrate:fresh --seed --force \
-    && php artisan filament:assets \
-    && php artisan storage:link --force \
-    && php artisan view:clear \
-    && php artisan config:clear
+    && php artisan filament:assets
 
 # Hak akses folder storage, cache, database, & public
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database /var/www/html/public \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database /var/www/html/public
+
+# Izinkan eksekusi entrypoint
+RUN chmod +x /var/www/html/docker-entrypoint.sh
+
+ENTRYPOINT ["/var/www/html/docker-entrypoint.sh"]
