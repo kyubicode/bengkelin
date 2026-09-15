@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-# Install dependencies & ekstensi PHP
+# Install dependencies, PHP extensions, serta Node.js & NPM
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -15,10 +15,12 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
+    nodejs \
+    npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip intl opcache
 
-# Aktifkan mod_rewrite & atur VirtualHost Apache untuk Laravel
+# Konfigurasi VirtualHost Apache
 RUN a2enmod rewrite
 RUN printf '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
@@ -29,7 +31,6 @@ RUN printf '<VirtualHost *:80>\n\
     </Directory>\n\
 </VirtualHost>\n' > /etc/apache2/sites-available/000-default.conf
 
-# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
@@ -39,10 +40,13 @@ COPY . .
 ENV COMPOSER_MEMORY_LIMIT=-1
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Buat database & jalankan migrasi
+# Build frontend assets & publish asset Filament
+RUN npm install && npm run build
 RUN touch /var/www/html/database/database.sqlite \
-    && php artisan migrate --force
+    && php artisan migrate --force \
+    && php artisan filament:assets \
+    && php artisan storage:link
 
-# Hak akses folder storage, cache, & database
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+# Hak akses folder storage, cache, database, & public
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database /var/www/html/public \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database /var/www/html/public
