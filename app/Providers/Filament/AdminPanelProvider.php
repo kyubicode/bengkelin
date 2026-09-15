@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName('DEMO VERSION')
             ->colors([
                 'primary' => Color::Amber,
                 'gray' => Color::Slate,
