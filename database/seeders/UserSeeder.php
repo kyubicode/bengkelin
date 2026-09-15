@@ -10,6 +10,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::firstOrCreate(
+            ['role_id'=>1],
             ['email' => 'admin@admin.com'],
             [
                 'name' => 'Admin CMS',

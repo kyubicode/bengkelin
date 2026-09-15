@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: luna-bengkelin
+    env: php
+    plan: free
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      php artisan config:cache
+      php artisan route:cache
+      php artisan view:cache
+      php artisan migrate --force
+    startCommand: apache2-foreground
+    envVars:
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: true
+      - key: LOG_CHANNEL
+        value: stderr
