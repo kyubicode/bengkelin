@@ -1,0 +1,101 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+/* ==========================================================
+   SIDEBAR — Background & warna dasar
+   Palet: slate gelap netral, aksen indigo tipis (gak nabrak)
+   ========================================================== */
+.fi-sidebar {
+    background-color: #1e293b !important; /* slate-800, lebih netral dari indigo pekat */
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.fi-sidebar-nav {
+    background-color: transparent !important;
+}
+
+.fi-sidebar-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ==========================================================
+   SIDEBAR — Teks & ikon menu (item non-aktif)
+   ========================================================== */
+.fi-sidebar-item-label {
+    color: #94a3b8 !important; /* slate-400, lembut, gak terlalu terang */
+    font-weight: 500 !important;
+    white-space: normal !important;
+    line-height: 1.25 !important;
+}
+
+.fi-sidebar-item-icon {
+    color: #64748b !important; /* slate-500, senada sama teks */
+}
+
+/* ==========================================================
+   SIDEBAR — Hover state (halus)
+   ========================================================== */
+.fi-sidebar-item a:hover,
+.fi-sidebar-item button:hover {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border-radius: 0.5rem !important;
+}
+
+.fi-sidebar-item a:hover .fi-sidebar-item-label,
+.fi-sidebar-item button:hover .fi-sidebar-item-label {
+    color: #e2e8f0 !important; /* slate-200 */
+}
+
+/* ==========================================================
+   SIDEBAR — Item aktif (satu-satunya titik aksen warna)
+   ========================================================== */
+.fi-sidebar-item-active a,
+.fi-sidebar-item-active button {
+    background-color: rgba(99, 102, 241, 0.12) !important; /* indigo tipis, transparan */
+    border-radius: 0.5rem !important;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-label {
+    color: #e2e8f0 !important;
+    font-weight: 600 !important;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-icon {
+    color: #818cf8 !important; /* satu-satunya elemen yang boleh "warna" jelas */
+}
+
+/* ==========================================================
+   SIDEBAR — Label grup navigasi
+   ========================================================== */
+.fi-sidebar-group-label {
+    color: #64748b !important; /* sengaja lebih redup dari item menu */
+    font-weight: 600 !important;
+    font-size: 0.6875rem !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+}
+
+/* ==========================================================
+   SIDEBAR — Spacing & padding
+   ========================================================== */
+aside .fi-sidebar-item a,
+aside .fi-sidebar-item button {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+aside .fi-sidebar-group-items {
+    gap: 0.2rem !important;
+}
+
+aside .fi-sidebar-group {
+    margin-bottom: 0.75rem !important;
+}
+
+/* ==========================================================
+   CARD / SECTION / WIDGET — Sudut lebih halus
+   ========================================================== */
+.fi-section,
+.fi-wi-widget {
+    border-radius: 1rem !important;
+}
