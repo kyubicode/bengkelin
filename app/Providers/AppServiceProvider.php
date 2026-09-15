@@ -8,6 +8,7 @@ use App\Modules\Workshop\WorkshopModule;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL; // <-- Tambahkan ini
 
 class AppServiceProvider extends ServiceProvider
 {

@@ -45,7 +45,9 @@ RUN npm install && npm run build
 RUN touch /var/www/html/database/database.sqlite \
     && php artisan migrate --force \
     && php artisan filament:assets \
-    && php artisan storage:link
+    && php artisan storage:link \
+    && php artisan view:clear \
+    && php artisan config:clear
 
 # Hak akses folder storage, cache, database, & public
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database /var/www/html/public \
