@@ -14,9 +14,9 @@ class DatabaseSeeder extends Seeder
             // Seeder User & CMS Filament
             UserSeeder::class,
             CmsSeeder::class,
-
             // Seeder Master Data Booking Bengkel (Layanan & Keluhan)
             MasterDataSeeder::class,
+            ComplaintSymptomSeeder::class,
         ]);
     }
 }

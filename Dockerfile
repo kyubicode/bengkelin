@@ -37,15 +37,21 @@ WORKDIR /var/www/html
 
 COPY . .
 
+# Paksa environment database ke SQLite saat proses build
 ENV COMPOSER_MEMORY_LIMIT=-1
+ENV DB_CONNECTION=sqlite
+ENV DB_DATABASE=/var/www/html/database/database.sqlite
+
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Build frontend assets & publish asset Filament
-RUN npm install && npm run build
-RUN touch /var/www/html/database/database.sqlite \
-    && php artisan migrate --force \
+# Build frontend, buat DB SQLite, jalankan migrasi & seeder
+RUN rm -f public/hot \
+    && npm install \
+    && npm run build \
+    && touch /var/www/html/database/database.sqlite \
+    && php artisan migrate:fresh --seed --force \
     && php artisan filament:assets \
-    && php artisan storage:link \
+    && php artisan storage:link --force \
     && php artisan view:clear \
     && php artisan config:clear
 
